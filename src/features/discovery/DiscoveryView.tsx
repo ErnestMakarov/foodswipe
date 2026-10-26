@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { ArrowLeft, ArrowRight, Heart, RotateCcw, SlidersHorizontal, X, Sparkles, Clock3, Star } from "lucide-react";
 import { useNavigate } from "react-router";
 import Button from "../../components/ui/Button";
@@ -27,7 +27,7 @@ function readPreferences(): FoodPreferences {
       return parsed as FoodPreferences;
     }
   } catch {
-    // Fall back to the safe demo defaults if session storage is unavailable or malformed
+    // Fall back to the safe demo defaults if session storage is unavailable or malformed.
   }
   return defaultPreferences;
 }
@@ -42,6 +42,7 @@ export default function DiscoveryView() {
   const [dragX, setDragX] = useState(0);
   const [dragging, setDragging] = useState(false);
   const pointerStart = useRef<number | null>(null);
+  const latestDragX = useRef(0);
 
   useEffect(() => {
     setDeck(shuffleFoods(filterFoods(foods, preferences)));
@@ -50,11 +51,6 @@ export default function DiscoveryView() {
   const currentFood = deck[position];
   const nextFood = deck[position + 1];
   const progress = deck.length ? Math.min(position / deck.length, 1) : 1;
-
-  const emptyReason = useMemo(() => {
-    if (deck.length > 0) return "";
-    return "No dishes match those filters. Try a higher budget or fewer exclusions.";
-  }, [deck.length]);
 
   function decide(isLiked: boolean) {
     if (!currentFood) return;
@@ -68,6 +64,7 @@ export default function DiscoveryView() {
       setSkipped((current) => current + 1);
     }
     setPosition((current) => current + 1);
+    latestDragX.current = 0;
     setDragX(0);
   }
 
@@ -81,28 +78,42 @@ export default function DiscoveryView() {
     setPosition(0);
     setLiked([]);
     setSkipped(0);
+    latestDragX.current = 0;
     setDragX(0);
   }
 
-  function onPointerDown(event: React.PointerEvent<HTMLElement>) {
+  // Mouse users on desktop use the explicit buttons; touch dragging stays available on phones/tablets.
+  function onPointerDown(event: PointerEvent<HTMLElement>) {
+    if (event.pointerType === "mouse") return;
     pointerStart.current = event.clientX;
+    latestDragX.current = 0;
     setDragging(true);
     event.currentTarget.setPointerCapture(event.pointerId);
   }
 
-  function onPointerMove(event: React.PointerEvent<HTMLElement>) {
+  function onPointerMove(event: PointerEvent<HTMLElement>) {
     if (pointerStart.current === null) return;
-    setDragX(event.clientX - pointerStart.current);
+    const nextX = event.clientX - pointerStart.current;
+    latestDragX.current = nextX;
+    setDragX(nextX);
   }
 
   function onPointerUp() {
     if (pointerStart.current === null) return;
-    const delta = dragX;
+    const delta = latestDragX.current;
     pointerStart.current = null;
+    latestDragX.current = 0;
     setDragging(false);
     if (delta > 90) decide(true);
     else if (delta < -90) decide(false);
     else setDragX(0);
+  }
+
+  function onPointerCancel() {
+    pointerStart.current = null;
+    latestDragX.current = 0;
+    setDragging(false);
+    setDragX(0);
   }
 
   return (
@@ -144,8 +155,8 @@ export default function DiscoveryView() {
                   onPointerDown={onPointerDown}
                   onPointerMove={onPointerMove}
                   onPointerUp={onPointerUp}
-                  onPointerCancel={onPointerUp}
-                  className={`card-enter relative z-10 touch-pan-y select-none overflow-hidden rounded-[28px] border border-[#e7ebe4] bg-white shadow-[0_20px_60px_rgba(34,52,36,0.10)] ${dragging ? "cursor-grabbing" : "cursor-grab"}`}
+                  onPointerCancel={onPointerCancel}
+                  className={`card-enter relative z-10 touch-pan-y select-none overflow-hidden rounded-[28px] border border-[#e7ebe4] bg-white shadow-[0_20px_60px_rgba(34,52,36,0.10)] ${dragging ? "cursor-grabbing" : "cursor-grab md:cursor-default"}`}
                   style={{
                     transform: `translateX(${dragX}px) rotate(${dragX * 0.035}deg)`,
                     transition: dragging ? "none" : "transform 180ms ease",
@@ -193,7 +204,16 @@ export default function DiscoveryView() {
                     <ArrowRight size={22} />
                   </button>
                 </div>
-                <p className="mt-3 text-center text-[11px] text-[#8a938b]">You can also drag the card left or right.</p>
+                <p className="mt-3 text-center text-[11px] text-[#8a938b]">Use the buttons here, or swipe the card on your phone.</p>
+              </div>
+            ) : deck.length === 0 ? (
+              <div className="rounded-[28px] border border-[#e7ebe4] bg-white px-6 py-12 text-center shadow-sm">
+                <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-[#e9f5ec] text-[#168447]"><SlidersHorizontal size={23} /></div>
+                <h2 className="mt-4 text-2xl font-black tracking-[-.8px]">No matches just yet.</h2>
+                <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-[#758076]">Try a higher budget or remove a category filter to see more dishes.</p>
+                <div className="mt-6 flex justify-center">
+                  <Button onClick={() => navigate("/preferences")}>Adjust preferences <ArrowRight size={16} /></Button>
+                </div>
               </div>
             ) : (
               <div className="rounded-[28px] border border-[#e7ebe4] bg-white px-6 py-12 text-center shadow-sm">
@@ -251,9 +271,6 @@ export default function DiscoveryView() {
           <span>{liked.length} liked</span>
         </div>
       </div>
-      {emptyReason && deck.length === 0 && (
-        <div className="sr-only" role="status">{emptyReason}</div>
-      )}
     </main>
   );
 }

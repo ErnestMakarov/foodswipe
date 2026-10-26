@@ -38,23 +38,21 @@ export default function AppLayout() {
               <Heart size={16} />
               <span className="hidden sm:inline">Saved</span>
             </NavLink>
-            <a
-              href="https://github.com/"
-              target="_blank"
-              rel="noreferrer"
-              className="ml-1 hidden items-center gap-1 rounded-lg px-3 py-2 text-sm font-semibold text-[#69736b] hover:bg-white md:inline-flex"
-            >
-              GitHub <ArrowUpRight size={14} />
-            </a>
+
           </nav>
         </div>
       </header>
 
       <Outlet />
 
-      <footer className="mx-auto flex max-w-6xl flex-col gap-2 border-t border-[#e8ebe5] px-5 py-6 text-[11px] leading-relaxed text-[#879087] sm:flex-row sm:items-center sm:justify-between sm:px-8">
-        <span>ERNEST · An independent food discovery concept</span>
-        <span>Demo dishes, prices and restaurants are illustrative. Not affiliated with Bolt Food.</span>
+      <footer className="mx-auto flex max-w-6xl flex-col gap-3 border-t border-[#e8ebe5] px-5 py-6 text-[11px] leading-relaxed text-[#879087] sm:flex-row sm:items-center sm:justify-between sm:px-8">
+        <div className="flex flex-col gap-1">
+          <span className="font-bold text-[#58635a]">ERNEST · An independent food discovery concept</span>
+          <span>Demo dishes, prices and restaurants are illustrative. Not affiliated with Bolt Food.</span>
+        </div>
+        <a href="https://www.ernestmakarov.ee/contacts" target="_blank" rel="noreferrer" className="inline-flex w-fit items-center gap-2 rounded-xl border border-[#dce7da] bg-white px-3.5 py-2 font-bold text-[#168447] transition hover:border-[#168447] hover:bg-[#f0f7ef] hover:text-[#106b38]">
+          Built by Ernest · Get in touch <ArrowUpRight size={13} />
+        </a>
       </footer>
     </div>
   );
