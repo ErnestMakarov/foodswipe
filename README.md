@@ -1,40 +1,35 @@
 # ERNEST — Food Discovery
 
-An independent, mobile-first food discovery prototype exploring a simple idea: help people who are hungry but don't know what to order discover suitable dishes faster.
+An independent concept prototype exploring a simpler way to decide what to order.
 
-## Prototype features
+## The Problem
 
-- Preference setup with a maximum budget and food exclusions
-- Swipe-style discovery cards with keyboard/button controls and pointer dragging
-- Like / skip decisions and a saved shortlist
-- Responsive layouts for mobile and desktop
-- Local demo data only; no Bolt Food integration, live restaurant availability, accounts, or checkout
+Choosing what to eat can be overwhelming when users are unsure what they want. Browsing multiple restaurants and menus takes time and can make the decision harder.
 
-## Tech stack
+## The Solution
 
-React, TypeScript, Vite, React Router, Tailwind CSS v4, Lucide icons.
+ERNEST explores a swipe-based food discovery experience. Users set their preferences, swipe through meal suggestions, and receive restaurant recommendations based on the dishes they like.
 
-## Run locally
+## Features
+
+- Budget and food preference filters
+- Swipe-based meal discovery
+- Personalized restaurant recommendations based on liked dishes
+- Responsive, mobile-first interface
+
+## Tech Stack
+
+React · TypeScript · Vite · Tailwind CSS · React Router
+
+## Getting Started
 
 ```bash
 npm install
 npm run dev
 ```
 
-Check the production build and lint:
+## Project Status
 
-```bash
-npm run build
-npm run lint
-```
+This is an independent prototype using illustrative restaurant and menu data. It is not affiliated with or connected to Bolt Food and does not process real orders.
 
-## Disclaimer
-
-ERNEST is an independent concept prototype and is not affiliated with, endorsed by, or an official product of Bolt Food. Restaurant names, dishes, prices and availability in the demo are illustrative.
-
-
-## Deploying to Vercel
-
-Import this repository into Vercel and keep the default Vite settings (build command `npm run build`, output directory `dist`). The included `vercel.json` rewrite supports client-side routes when a user opens or refreshes a route directly.
-
-The discovery card supports touch swipes on phones and tablets. On desktop, use the visible Skip and Like buttons for predictable interaction. The footer includes a compact link to Ernest's portfolio contact page.
+The concept is intended for experimentation, usability testing, and further product development.
