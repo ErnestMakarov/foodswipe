@@ -5,7 +5,7 @@ function App() {
   return (
     <>
       <section id="center">
-        hello bolt
+        <h1 className='text-8xl font-bold'>hello bolt!</h1>
       </section>
         
     </>
